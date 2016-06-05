@@ -9,10 +9,11 @@
   "author": "James Powell",
   "license": "MIT",
   "devDependencies": {
+    "fs-extra": "^0.30.0",
     "mime-types": "^2.1.11"
   },
-   "engines": {
-    "node": "0.10.37",
+  "engines": {
+    "node": "0.10.40",
     "npm": "3.3.9"
   }
 }
