@@ -48,6 +48,9 @@ http.createServer( function(req, res) {
 		});
 	} else {
 		res.writeHead(200);
+		fs.readdir('data', function(err, files) {
+			console.log(files);
+		});
 		res.write('Sorry, what you\'re looking for isn\'t here.');
 		res.end();
 	}
