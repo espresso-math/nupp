@@ -7,7 +7,6 @@
 
 // Require requirements
 var http = require('http'),
-	util = require('util'),
 	fs = require('fs');
 
 // Some globals and settings
