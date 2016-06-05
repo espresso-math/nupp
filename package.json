@@ -1,0 +1,14 @@
+{
+  "name": "nup",
+  "version": "1.0.0",
+  "description": "A simple data dump api",
+  "main": "nd.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "James Powell",
+  "license": "MIT",
+  "devDependencies": {
+    "mime-types": "^2.1.11"
+  }
+}
