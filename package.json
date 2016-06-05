@@ -4,15 +4,15 @@
   "description": "A simple data dump api",
   "main": "nd.js",
   "scripts": {
-    "start": "nd.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node nd.js"
   },
   "author": "James Powell",
   "license": "MIT",
   "devDependencies": {
     "mime-types": "^2.1.11"
   },
-  "engines": {
-    "node": "0.10.37"
+   "engines": {
+    "node": "0.10.37",
+    "npm": "3.3.9"
   }
 }
