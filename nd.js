@@ -30,9 +30,11 @@ http.createServer( function(req, res) {
 		req.on('data', function(chunk) {
 			fs.createWriteStream('data/' + identifier + '.nup', {'flags': 'a'}).write(chunk); // The {'flags': 'a'} appends multiple chunks of data. This is required for image files.
 			console.log('once');
+		}).on('end', function() {
+			res.write(JSON.stringify(output));
+			res.end();
 		});
-		res.write(JSON.stringify(output));
-		res.end();
+		
 	} else if (req.url.indexOf('/data/dl/') > -1) {
 		var na = req.url.replace("/data/dl/", "");
 		var name = na.substr(0, na.lastIndexOf('.')) || na;
