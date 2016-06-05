@@ -29,6 +29,7 @@ http.createServer( function(req, res) {
 		res.writeHead(200, {'content-type': 'application/json'});
 		req.on('data', function(chunk) {
 			fs.createWriteStream('data/' + identifier + '.nup', {'flags': 'a'}).write(chunk); // The {'flags': 'a'} appends multiple chunks of data. This is required for image files.
+			console.log('once');
 		});
 		res.write(JSON.stringify(output));
 		res.end();
