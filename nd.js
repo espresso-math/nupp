@@ -22,7 +22,7 @@ http.createServer( function(req, res) {
 
 	// The function loop.
 
-	if (req.url == "/data" && req.method.toLowerCase() == "put") {
+	if (req.url == "/data" && req.method.toLowerCase() == "post") {
 		var identifier = randomGen(10);
 		var output = {};
 		output.key = identifier;
