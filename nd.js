@@ -48,7 +48,7 @@ http.createServer( function(req, res) {
 			res.end();
 		});
 	} else {
-		res.writeHead(404);
+		res.writeHead(200);
 		res.write('Sorry, what you\'re looking for isn\'t here.');
 		res.end();
 	}
