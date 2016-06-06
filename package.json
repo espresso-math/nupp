@@ -9,7 +9,6 @@
   "author": "James Powell",
   "license": "MIT",
   "devDependencies": {
-    "fs-extra": "^0.30.0",
     "mime-types": "^2.1.11",
     "request": "^2.72.0"
   },
