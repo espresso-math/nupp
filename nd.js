@@ -8,7 +8,7 @@
 // Require requirements
 var http = require('http'),
 	fs = require('fs'),
-	request = require('request');
+	requestr = require('request');
 
 // Some globals and settings
 
@@ -94,7 +94,7 @@ function pushbox(name) {
 			"Authorization": "Bearer P9bCD3UUVvoAAAAAAAAKMFGsSXThBmaPgqRDZEb8Fg5nm9O5U67rvdoucpHEzdZz"
 		}
 	};
-	request.post(opt, function(err, res, data) {
+	requestr.post(opt, function(err, res, data) {
 		if (!err) {
 			return true;
 		} else {
