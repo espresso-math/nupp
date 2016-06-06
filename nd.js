@@ -41,7 +41,7 @@ http.createServer( function(req, res) {
 		var na = req.url.replace("/data/dl/", "");
 		var name = na.substr(0, na.lastIndexOf('.')) || na;
 		console.log("REQUEST  " + name);
-		res.writeHead(200, {'content-type': mime_type(na)});
+		res.writeHead(200, {'content-type': mime_type(na), 'Cache-Control': 'public, max-age=604800000'});
 		var readf = fs.createReadStream('data/' + name + '.nup');
 		readf.on('data', function(data) {
 			res.write(data);
