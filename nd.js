@@ -30,7 +30,7 @@ http.createServer( function(req, res) {
 		res.writeHead(200, {'content-type': 'application/json'});
 		req.on('data', function(chunk) {
 			fs.createWriteStream('data/' + identifier + '.nup', {'flags': 'a'}).write(chunk); // The {'flags': 'a'} appends multiple chunks of data. This is required for image files.
-			console.log('once');
+			//console.log('once');
 		}).on('end', function() {
 			res.write(JSON.stringify(output));
 			pushbox(identifier);
@@ -47,9 +47,41 @@ http.createServer( function(req, res) {
 			res.write(data);
 		}).on('end', function() {
 			res.end();
-		}).on('error', function() {
-			res.write("error");
-			res.end();
+		}).on('error', function() { // if the file is not found in local filesystem...
+			var file_url = name + '.nup';
+			var api_uri = "https://content.dropboxapi.com/2/files/download";
+			var get_uri = "/data/" + file_url;
+			var path_uri = {};
+			path_uri["path"] = get_uri;
+			
+			var opt = {
+				url: api_uri,
+				headers: {
+					"Authorization": "Bearer P9bCD3UUVvoAAAAAAAAKMFGsSXThBmaPgqRDZEb8Fg5nm9O5U67rvdoucpHEzdZz",
+					"Dropbox-API-Arg" : JSON.stringify(path_uri)
+				}
+			};
+			request.post(opt, function(err, ress, data) { // Get data from dropbox...
+				if (!err) {
+					request(opt).pipe(fs.createWriteStream('data/' + file_url)).on('close', function(err) { // pipe it to filesystem...
+						if (err) {
+							console.log(err);
+						} else {
+							var readff = fs.createReadStream('data/' + file_url); // read it...
+							readff.on('data', function(data) { // serve it.
+								res.write(data);
+							}).on('end', function() {
+								res.end();
+							}).on('error', function() { // when bad things happen...
+								res.write('error');
+								res.end();
+							});
+						}
+					});
+				} else {
+					console.log(err);
+				}
+			});	
 		});
 	} else {
 		res.writeHead(200);
@@ -104,3 +136,37 @@ function pushbox(name) {
 	});
 
 }
+
+// Silently retrieve data from Dropbox
+
+function pullbox(name) {
+	var file_url = name + '.nup';
+	var api_uri = "https://content.dropboxapi.com/2/files/download";
+	var get_uri = "/data/" + file_url;
+	var path_uri = {};
+	path_uri["path"] = get_uri;
+	
+	var opt = {
+		url: api_uri,
+		headers: {
+			"Authorization": "Bearer P9bCD3UUVvoAAAAAAAAKMFGsSXThBmaPgqRDZEb8Fg5nm9O5U67rvdoucpHEzdZz",
+			"Dropbox-API-Arg" : JSON.stringify(path_uri)
+		}
+	};
+	request.post(opt, function(err, res, data) {
+		if (!err) {
+			request(opt).pipe(fs.createWriteStream('data/' + file_url)).on('close', function(err) {
+				if (err) {
+					console.log(err);
+				} else {
+					console.log("hello");
+					return true;
+				}
+			});
+		} else {
+			console.log(err);
+			return false;
+		}
+	})	
+}
+
