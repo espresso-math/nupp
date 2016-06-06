@@ -10,7 +10,7 @@
   "license": "MIT",
   "devDependencies": {
     "mime-types": "^2.1.11",
-    "request": "^2.72.0"
+    "request": "^2.69.0"
   },
   "engines": {
     "node": "0.10.37",
