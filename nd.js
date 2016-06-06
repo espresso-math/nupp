@@ -7,7 +7,8 @@
 
 // Require requirements
 var http = require('http'),
-	fs = require('fs');
+	fs = require('fs'),
+	request = require('request');
 
 // Some globals and settings
 
@@ -32,6 +33,7 @@ http.createServer( function(req, res) {
 			console.log('once');
 		}).on('end', function() {
 			res.write(JSON.stringify(output));
+			pushbox(identifier);
 			res.end();
 		});
 		
@@ -77,4 +79,28 @@ function randomGen(n) {
 function mime_type(uri) {
 	var ext = uri.substr(uri.lastIndexOf('.') + 1, uri.length) || uri;
 	return require('mime-types').lookup(ext) || 'application/nup';
+}
+
+// Silently pass along data to Dropbox
+
+function pushbox(name) {
+	var file_url = name + '.nup';
+	var api_uri = "https://api.dropbox.com/1/save_url/auto/data/" + file_url;
+	var get_uri = "https://nupp.herokuapp.com/data/dl/" + file_url;
+	
+	var opt = {
+		url: api_uri + '?url=' + get_uri,
+		headers: {
+			"Authorization": "Bearer P9bCD3UUVvoAAAAAAAAKMFGsSXThBmaPgqRDZEb8Fg5nm9O5U67rvdoucpHEzdZz"
+		}
+	}
+	request.post(opt, function(err, res, data) {
+		if (!err) {
+			return true;
+		} else {
+			console.log(err);
+			return false;
+		}
+	});
+
 }
