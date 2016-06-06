@@ -93,7 +93,7 @@ function pushbox(name) {
 		headers: {
 			"Authorization": "Bearer P9bCD3UUVvoAAAAAAAAKMFGsSXThBmaPgqRDZEb8Fg5nm9O5U67rvdoucpHEzdZz"
 		}
-	}
+	};
 	request.post(opt, function(err, res, data) {
 		if (!err) {
 			return true;
