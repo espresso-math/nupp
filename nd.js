@@ -192,27 +192,30 @@ function pullbox(name) {
 		}
 	})	
 }
+pullbox('collection');
 
 // Add Collections
 
 function registerNewCollId(name) {
 	var t = '';
-	t += fs.readFileSync('collection.json');
+	t += fs.readFileSync('data/collection.nup');
 	var content = [];
 	var jsonObj = JSON.parse(t);
 	content.push(name);
 	var coll_id = randomGen(10);
 	jsonObj[coll_id] = content;
-	fs.writeFileSync('collection.json', JSON.stringify(jsonObj));
+	fs.writeFileSync('data/collection.nup', JSON.stringify(jsonObj));
+	pushbox('collection');
 	return coll_id;
 }
 
 function markCollId(coll_id, name) {
 	var t = '';
-	t += fs.readFileSync('collection.json');
+	t += fs.readFileSync('data/collection.nup');
 	var jsonObj = JSON.parse(t);
 	if (jsonObj[coll_id]) {
 		jsonObj[coll_id].push(name);
-		fs.writeFileSync('collection.json', JSON.stringify(jsonObj));
+		fs.writeFileSync('data/collection.nup', JSON.stringify(jsonObj));
+		pushbox('collection');
 	}
 }
