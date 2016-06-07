@@ -83,29 +83,6 @@ http.createServer( function(req, res) {
 				}
 			});	
 		});
-	} else if (req.url.indexOf('/data/collection/') > -1 && req.method.toLowerCase() == "post") {
-		var identifier = randomGen(10);
-		var output = {};
-		output.key = identifier;
-		var collid = req.url.replace('/data/collection/', "");
-		// Register Collection
-		if (collid.length == 0) {
-			output.coll_id = registerNewCollId(identifier);
-		} else if (collid.length == 10) {
-			output.coll_id = collid;
-			markCollId(collid, identifier);
-		}
-
-		// Continue...
-		res.writeHead(200, {'content-type': 'application/json'});
-		req.on('data', function(chunk) {
-			fs.createWriteStream('data/' + identifier + '.nup', {'flags': 'a'}).write(chunk); // The {'flags': 'a'} appends multiple chunks of data. This is required for image files.
-			//console.log('once');
-		}).on('end', function() {
-			res.write(JSON.stringify(output));
-			pushbox(identifier);
-			res.end();
-		});
 	} else {
 		res.writeHead(200);
 		fs.readdir('data', function(err, files) {
@@ -160,62 +137,3 @@ function pushbox(name) {
 
 }
 
-// Silently retrieve data from Dropbox
-
-function pullbox(name) {
-	var file_url = name + '.nup';
-	var api_uri = "https://content.dropboxapi.com/2/files/download";
-	var get_uri = "/data/" + file_url;
-	var path_uri = {};
-	path_uri["path"] = get_uri;
-	
-	var opt = {
-		url: api_uri,
-		headers: {
-			"Authorization": "Bearer P9bCD3UUVvoAAAAAAAAKMFGsSXThBmaPgqRDZEb8Fg5nm9O5U67rvdoucpHEzdZz",
-			"Dropbox-API-Arg" : JSON.stringify(path_uri)
-		}
-	};
-	request.post(opt, function(err, res, data) {
-		if (!err) {
-			request(opt).pipe(fs.createWriteStream('data/' + file_url)).on('close', function(err) {
-				if (err) {
-					console.log(err);
-				} else {
-					console.log("hello");
-					return true;
-				}
-			});
-		} else {
-			console.log(err);
-			return false;
-		}
-	})	
-}
-pullbox('collection');
-
-// Add Collections
-
-function registerNewCollId(name) {
-	var t = '';
-	t += fs.readFileSync('data/collection.nup');
-	var content = [];
-	var jsonObj = JSON.parse(t);
-	content.push(name);
-	var coll_id = randomGen(10);
-	jsonObj[coll_id] = content;
-	fs.writeFileSync('data/collection.nup', JSON.stringify(jsonObj));
-	pushbox('collection');
-	return coll_id;
-}
-
-function markCollId(coll_id, name) {
-	var t = '';
-	t += fs.readFileSync('data/collection.nup');
-	var jsonObj = JSON.parse(t);
-	if (jsonObj[coll_id]) {
-		jsonObj[coll_id].push(name);
-		fs.writeFileSync('data/collection.nup', JSON.stringify(jsonObj));
-		pushbox('collection');
-	}
-}
