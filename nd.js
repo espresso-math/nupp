@@ -83,6 +83,29 @@ http.createServer( function(req, res) {
 				}
 			});	
 		});
+	} else if (req.url.indexOf('/data/collection/') > -1 && req.method.toLowerCase() == "post") {
+		var identifier = randomGen(10);
+		var output = {};
+		output.key = identifier;
+		var collid = req.url.replace('/data/collection/', "");
+		// Register Collection
+		if (collid.length == 0) {
+			output.coll_id = registerNewCollId(identifier);
+		} else if (collid.length == 10) {
+			output.coll_id = collid;
+			markCollId(collid, identifier);
+		}
+
+		// Continue...
+		res.writeHead(200, {'content-type': 'application/json'});
+		req.on('data', function(chunk) {
+			fs.createWriteStream('data/' + identifier + '.nup', {'flags': 'a'}).write(chunk); // The {'flags': 'a'} appends multiple chunks of data. This is required for image files.
+			//console.log('once');
+		}).on('end', function() {
+			res.write(JSON.stringify(output));
+			pushbox(identifier);
+			res.end();
+		});
 	} else {
 		res.writeHead(200);
 		fs.readdir('data', function(err, files) {
@@ -92,7 +115,7 @@ http.createServer( function(req, res) {
 		res.end();
 	}
 
-}).listen(process.env.PORT || 8080); // Heroku needs port to be set to process.env.PORT 8080 for local development
+}).listen(process.env.PORT || 8080); // Heroku needs port to be set to process.env.PORT, 8080 for local development
 
 
 // Generates an new key
@@ -170,3 +193,26 @@ function pullbox(name) {
 	})	
 }
 
+// Add Collections
+
+function registerNewCollId(name) {
+	var t = '';
+	t += fs.readFileSync('collection.json');
+	var content = [];
+	var jsonObj = JSON.parse(t);
+	content.push(name);
+	var coll_id = randomGen(10);
+	jsonObj[coll_id] = content;
+	fs.writeFileSync('collection.json', JSON.stringify(jsonObj));
+	return coll_id;
+}
+
+function markCollId(coll_id, name) {
+	var t = '';
+	t += fs.readFileSync('collection.json');
+	var jsonObj = JSON.parse(t);
+	if (jsonObj[coll_id]) {
+		jsonObj[coll_id].push(name);
+		fs.writeFileSync('collection.json', JSON.stringify(jsonObj));
+	}
+}
