@@ -37,6 +37,31 @@ http.createServer( function(req, res) {
 			res.end();
 		});
 		
+	} else if (req.url.indexOf('/data/?u=') > -1 && req.method.toLowerCase() == "get") {
+		var url = req.url.replace("/data/?u=", "");
+		var identifier = randomGen(10);
+		var output = {};
+		output.key = identifier;
+		var download = function(uri, filename, callback){
+			request.head(uri, function(err, res, body){
+				request(uri).pipe(fs.createWriteStream(filename)).on('close', callback);
+			});
+		};
+			
+		download( url, "data/" + identifier + '.nup', function (err) {
+			if (!err) {
+				console.log("done");
+				res.writeHead(200, {"content-type": "application/json"});
+				res.write(JSON.stringify(output));
+				pushbox(identifier);
+				res.end();
+			} else {
+				console.log(err);
+				res.writeHead(500);
+				res.write("nothing");
+				res.end();
+			}
+		});
 	} else if (req.url.indexOf('/data/dl/') > -1) {
 		var na = req.url.replace("/data/dl/", "");
 		var name = na.substr(0, na.lastIndexOf('.')) || na;
